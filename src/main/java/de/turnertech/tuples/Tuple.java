@@ -42,22 +42,22 @@ public class Tuple implements Collection<Object> {
         
     }
 
-    protected final Object[] elements;
+    private final Object[] elements;
 
-    public static EmptyTuple from() {
-        return new EmptyTuple();
+    public static Tuple0 from() {
+        return new Tuple0();
     }
 
-    public static <A> Single<A> from(A element0) {
-        return new Single<>(element0);
+    public static <A> Tuple1<A> from(A element0) {
+        return new Tuple1<>(element0);
     }
 
-    public static <A,B> Double<A,B> from(A element0, B element1) {
-        return new Double<>(element0, element1);
+    public static <A,B> Tuple2<A,B> from(A element0, B element1) {
+        return new Tuple2<>(element0, element1);
     }
 
-    public static <A,B,C> Triple<A,B,C> from(A element0, B element1, C element2) {
-        return new Triple<>(element0, element1, element2);
+    public static <A,B,C> Tuple3<A,B,C> from(A element0, B element1, C element2) {
+        return new Tuple3<>(element0, element1, element2);
     }
 
     public Tuple(Object... elements) {
@@ -83,7 +83,7 @@ public class Tuple implements Collection<Object> {
     }
 
     public boolean isEmpty() {
-        return elements.length == 0;
+        return flatten().elements.length == 0;
     }
 
     private void flatten(List<Object> out) {
