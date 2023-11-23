@@ -10,9 +10,13 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
- * n-Tuple, the core of this package. This class models the concept of an untyped
+ * <p>n-Tuple, the core of this package. This class models the concept of an untyped
  * n-Tuple of any length. It provides basic functionality for creation and reading
- * of immutable Tuples.
+ * of immutable Tuples. It implements the Collection interface in a read only 
+ * manner. Any calls to functions which would modify the collection will throw
+ * exceptions.</p>
+ * 
+ * <p>This implementation does not support null elements!</p>
  */
 public class Tuple implements Collection<Object> {
     
@@ -71,6 +75,11 @@ public class Tuple implements Collection<Object> {
         }
     }
 
+    /**
+     * 
+     * @param index of the next non null element in the tuple.
+     * @return the non null element in the tuple.
+     */
     public Object get(int index) {
         if(index < 0 || index >= size()) {
             throw new IndexOutOfBoundsException(index);
@@ -96,12 +105,24 @@ public class Tuple implements Collection<Object> {
         }
     }
 
+    /**
+     * <p>Removes all Tuples contained in this Tuple, and return a single "flat" Tuple. For example:</p>
+     * <pre>
+     *myTuple.toString() = (4, (), 8, (((), 6)))
+     *myTuple.flatten().toString() = (4, 8, 6)
+     * </pre>
+     * 
+     * @return A tuple containing no sub tuples
+     */
     public Tuple flatten() {
         LinkedList<Object> returnCollection = new LinkedList<>();
         this.flatten(returnCollection);
         return new Tuple(returnCollection.toArray());
     }
 
+    /**
+     * Uses Objects.toString() to represent this tuple in the for ((), 2, SomeString, etc)
+     */
     @Override
     public String toString() {
         final StringWriter stringWriter = new StringWriter();
@@ -172,11 +193,25 @@ public class Tuple implements Collection<Object> {
         return Arrays.asList(this.flatten().toArray()).containsAll(Objects.requireNonNull(c));
     }
 
+    /**
+     * <p>Returns a "Tuple Aware" iterator which ignores empty tuples, and iterates through child Tuples. For
+     * example given the Tuple ((9, ((), 1)), 1), this Iterator will respond with:</p>
+     * <pre>
+     *iter.next() == 9
+     *iter.next() == 1
+     *iter.next() == 1
+     *iter.next() throws NoSuchElementException
+     * </pre>
+     */
     @Override
     public Iterator<Object> iterator() {
         return new TupleIterator(this);
     }
 
+    /**
+     * Returns the raw contents of the Tuple, such that they could be used to create another equal Tuple.
+     * For example, given the Tuple ((), 1), this function will return an Object[]{Tuple0, 1}.
+     */
     @Override
     public Object[] toArray() {
         return elements;
@@ -188,31 +223,49 @@ public class Tuple implements Collection<Object> {
         throw new UnsupportedOperationException("Unimplemented method 'toArray'");
     }
 
+    /**
+     * Tuples are immutable and do not support 'add'
+     */
     @Override
     public boolean add(Object e) {
         throw new UnsupportedOperationException("Tuples are immutable and do not support 'add'");
     }
 
+    /**
+     * Tuples are immutable and do not support 'remove'
+     */
     @Override
     public boolean remove(Object o) {
         throw new UnsupportedOperationException("Tuples are immutable and do not support 'remove'");
     }
 
+    /**
+     * Tuples are immutable and do not support 'addAll'
+     */
     @Override
     public boolean addAll(Collection<? extends Object> c) {
         throw new UnsupportedOperationException("Tuples are immutable and do not support 'addAll'");
     }
 
+    /**
+     * Tuples are immutable and do not support 'removeAll'
+     */
     @Override
     public boolean removeAll(Collection<?> c) {
         throw new UnsupportedOperationException("Tuples are immutable and do not support 'removeAll'");
     }
 
+    /**
+     * Tuples are immutable and do not support 'retainAll'
+     */
     @Override
     public boolean retainAll(Collection<?> c) {
         throw new UnsupportedOperationException("Tuples are immutable and do not support 'retainAll'");
     }
 
+    /**
+     * Tuples are immutable and do not support 'clear'
+     */
     @Override
     public void clear() {
         throw new UnsupportedOperationException("Tuples are immutable and do not support 'clear'");
