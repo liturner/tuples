@@ -48,22 +48,55 @@ public class Tuple implements Collection<Object> {
 
     private final Object[] elements;
 
+    /**
+     * Create an empty tuple
+     * @return an empty tuple
+     */
     public static Tuple0 from() {
         return new Tuple0();
     }
 
+    /**
+     * Create a single tuple
+     * @param <A> the type of element0
+     * @param element0 the element to store
+     * @return the tuple
+     */
     public static <A> Tuple1<A> from(A element0) {
         return new Tuple1<>(element0);
     }
 
+    /**
+     * Create a double tuple
+     * @param <A> the type of element0
+     * @param <B> the type of element1
+     * @param element0 the element to store
+     * @param element1 the element to store
+     * @return the tuple
+     */
     public static <A,B> Tuple2<A,B> from(A element0, B element1) {
         return new Tuple2<>(element0, element1);
     }
 
+    /**
+     * Create a double tuple
+     * @param <A> the type of element0
+     * @param <B> the type of element1
+     * @param <C> the type of element2
+     * @param element0 the element to store
+     * @param element1 the element to store
+     * @param element2 the element to store
+     * @return the tuple
+     */
     public static <A,B,C> Tuple3<A,B,C> from(A element0, B element1, C element2) {
         return new Tuple3<>(element0, element1, element2);
     }
 
+    /**
+     * Constructs a fixed length, non typed tuple.
+     * 
+     * @param elements the elements
+     */
     public Tuple(Object... elements) {
         if(elements == null) {
             this.elements = new Object[0];
@@ -76,6 +109,7 @@ public class Tuple implements Collection<Object> {
     }
 
     /**
+     * Can be considered as tuple.flatten().get(...)
      * 
      * @param index of the next non null element in the tuple.
      * @return the non null element in the tuple.
@@ -91,6 +125,9 @@ public class Tuple implements Collection<Object> {
         return iterator.next();
     }
 
+    /**
+     * Equivelant to tuple.flatten().size() == 0
+     */
     public boolean isEmpty() {
         return flatten().elements.length == 0;
     }
@@ -138,6 +175,11 @@ public class Tuple implements Collection<Object> {
         return stringWriter.toString();
     }
 
+    /**
+     * Contrary to the rest of the functions, this implementation checks equality
+     * of the underlying array, and not equality in terms of "Tuple Equality".
+     * e.g. ((), 5) != (5, ()).
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -146,6 +188,11 @@ public class Tuple implements Collection<Object> {
         return result;
     }
 
+    /**
+     * Contrary to the rest of the functions, this implementation checks equality
+     * of the underlying array, and not equality in terms of "Tuple Equality".
+     * e.g. ((), 5) != (5, ()).
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -172,6 +219,9 @@ public class Tuple implements Collection<Object> {
         return returnSize;
     }
 
+    /**
+     * Equivelant to tuple.flatten().contains(...)
+     */
     @Override
     public boolean contains(Object o) {
         for(Object element : elements) {
@@ -188,6 +238,9 @@ public class Tuple implements Collection<Object> {
         return false;
     }
 
+    /**
+     * Equivelant to tuple.flatten().containsAll(...)
+     */
     @Override
     public boolean containsAll(Collection<?> c) {
         return Arrays.asList(this.flatten().toArray()).containsAll(Objects.requireNonNull(c));
@@ -217,10 +270,12 @@ public class Tuple implements Collection<Object> {
         return elements;
     }
 
+    /**
+     * Tuples are multi-typed and do not support 'toArray'
+     */
     @Override
     public <T> T[] toArray(T[] a) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toArray'");
+        throw new UnsupportedOperationException("Tuples are multi-typed and do not support 'toArray'");
     }
 
     /**

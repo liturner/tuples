@@ -3,8 +3,12 @@ package test.de.turnertech.tuples;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -68,6 +72,41 @@ class TupleTests {
     void isEmptyTest() {
         assertFalse(testTuple1.isEmpty());
         assertTrue(Tuple.from(Tuple.from(new Tuple0()), new Tuple0(), new Tuple0()).isEmpty());
+    }
+
+    @Test
+    void tuple1Test() {
+        assertEquals(9, new Tuple1<>(9).getElement0());
+    }
+
+    @Test
+    void containsAllTest() {
+        List<Integer> col = Arrays.asList(3, 6);
+        assertTrue(new Tuple(3, 6, 8).containsAll(col));
+        assertFalse(new Tuple(3, 7, 8).containsAll(col));
+    }
+
+    @Test
+    void containsTest() {
+        assertTrue(testTuple1.contains(1337));
+        assertTrue(testTuple1.contains("Billy"));
+    }
+
+    @Test
+    void unsupportedTest() {
+        List<Integer> col = Arrays.asList(4, 5);
+
+        assertThrows(UnsupportedOperationException.class,() -> testTuple1.clear());
+        assertThrows(UnsupportedOperationException.class,() -> testTuple1.add(7));
+        assertThrows(UnsupportedOperationException.class,() -> testTuple1.addAll(col));
+        assertThrows(UnsupportedOperationException.class,() -> testTuple1.remove(2));
+        assertThrows(UnsupportedOperationException.class,() -> testTuple1.retainAll(col));
+        assertThrows(UnsupportedOperationException.class,() -> testTuple1.removeAll(col));
+    }
+
+    @Test
+    void fromTest() {
+        assertNotNull(Tuple.from());
     }
     
 }

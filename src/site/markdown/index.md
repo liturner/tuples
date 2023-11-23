@@ -4,6 +4,10 @@ This library focuses on the concept of a Tuple as an ordered List of N elements.
 
 Additionally, a few Typed Tuple classes are provided.
 
+## Assumptions
+
+- A ```n-tuple``` does not "```extend```" a ```n+1-tuple```. In Java this means I cannot cast a ```Tuple3``` to a ```Tuple2```. This would not be correct for Tuples as a Tuple is immutable. Casting as in this example would be equivelant to removing an element, and not casting.
+
 ## Examples
 
 Typed tuples, usefull for fixed data, return types or similar.
