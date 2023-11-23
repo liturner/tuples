@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"de.turnertech.tuples","l":"Tuple"},{"p":"de.turnertech.tuples","l":"Tuple0"},{"p":"de.turnertech.tuples","l":"Tuple1"},{"p":"de.turnertech.tuples","l":"Tuple2"},{"p":"de.turnertech.tuples","l":"Tuple3"}];updateSearchResults();

@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Tuple.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Tuples</a> &gt; <a href="index.source.html" class="el_package">de.turnertech.tuples</a> &gt; <span class="el_source">Tuple.java</span></div><h1>Tuple.java</h1><pre class="source lang-java linenums">package de.turnertech.tuples;
+
+import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+
+/**
+ * &lt;p&gt;n-Tuple, the core of this package. This class models the concept of an untyped
+ * n-Tuple of any length. It provides basic functionality for creation and reading
+ * of immutable Tuples. It implements the Collection interface in a read only 
+ * manner. Any calls to functions which would modify the collection will throw
+ * exceptions.&lt;/p&gt;
+ * 
+ * &lt;p&gt;This implementation does not support null elements!&lt;/p&gt;
+ */
+public class Tuple implements Collection&lt;Object&gt; {
+    
+    private class TupleIterator implements Iterator&lt;Object&gt; {
+
+        private int currentIndex;
+
+        private final Object[] elements;
+
+<span class="fc" id="L29">        public TupleIterator(Tuple tuple) {</span>
+<span class="fc" id="L30">            this.elements = tuple.flatten().toArray();</span>
+<span class="fc" id="L31">            currentIndex = 0;</span>
+<span class="fc" id="L32">        }</span>
+
+        @Override
+        public boolean hasNext() {
+<span class="nc bnc" id="L36" title="All 2 branches missed.">            return currentIndex &lt; elements.length;</span>
+        }
+
+        @Override
+        public Object next() {
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">            if(currentIndex &gt;= elements.length) {</span>
+<span class="nc" id="L42">                throw new NoSuchElementException(&quot;Attempted to iterate beyond the end of a tuple.&quot;);</span>
+            }
+<span class="fc" id="L44">            return elements[currentIndex++];</span>
+        }
+        
+    }
+
+    private final Object[] elements;
+
+    public static Tuple0 from() {
+<span class="nc" id="L52">        return new Tuple0();</span>
+    }
+
+    public static &lt;A&gt; Tuple1&lt;A&gt; from(A element0) {
+<span class="fc" id="L56">        return new Tuple1&lt;&gt;(element0);</span>
+    }
+
+    public static &lt;A,B&gt; Tuple2&lt;A,B&gt; from(A element0, B element1) {
+<span class="nc" id="L60">        return new Tuple2&lt;&gt;(element0, element1);</span>
+    }
+
+    public static &lt;A,B,C&gt; Tuple3&lt;A,B,C&gt; from(A element0, B element1, C element2) {
+<span class="fc" id="L64">        return new Tuple3&lt;&gt;(element0, element1, element2);</span>
+    }
+
+<span class="fc" id="L67">    public Tuple(Object... elements) {</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">        if(elements == null) {</span>
+<span class="nc" id="L69">            this.elements = new Object[0];</span>
+<span class="nc" id="L70">        } else {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">            for(Object element : elements) {</span>
+<span class="fc" id="L72">                Objects.requireNonNull(element);</span>
+            }
+<span class="fc" id="L74">            this.elements = elements;</span>
+        }
+<span class="fc" id="L76">    }</span>
+
+    /**
+     * 
+     * @param index of the next non null element in the tuple.
+     * @return the non null element in the tuple.
+     */
+    public Object get(int index) {
+<span class="fc bfc" id="L84" title="All 4 branches covered.">        if(index &lt; 0 || index &gt;= size()) {</span>
+<span class="fc" id="L85">            throw new IndexOutOfBoundsException(index);</span>
+        }
+<span class="fc" id="L87">        final TupleIterator iterator = new TupleIterator(this);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        for(int i = 0; i &lt; index; ++i) {</span>
+<span class="fc" id="L89">            iterator.next();</span>
+        }
+<span class="fc" id="L91">        return iterator.next();</span>
+    }
+
+    public boolean isEmpty() {
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        return flatten().elements.length == 0;</span>
+    }
+
+    private void flatten(List&lt;Object&gt; out) {
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        for(Object element : elements) {</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">            if(element instanceof Tuple) {</span>
+<span class="fc" id="L101">                ((Tuple)element).flatten(out);</span>
+<span class="fc" id="L102">            } else {</span>
+<span class="fc" id="L103">                out.add(element);</span>
+            }
+        }
+<span class="fc" id="L106">    }</span>
+
+    /**
+     * &lt;p&gt;Removes all Tuples contained in this Tuple, and return a single &quot;flat&quot; Tuple. For example:&lt;/p&gt;
+     * &lt;pre&gt;
+     *myTuple.toString() = (4, (), 8, (((), 6)))
+     *myTuple.flatten().toString() = (4, 8, 6)
+     * &lt;/pre&gt;
+     * 
+     * @return A tuple containing no sub tuples
+     */
+    public Tuple flatten() {
+<span class="fc" id="L118">        LinkedList&lt;Object&gt; returnCollection = new LinkedList&lt;&gt;();</span>
+<span class="fc" id="L119">        this.flatten(returnCollection);</span>
+<span class="fc" id="L120">        return new Tuple(returnCollection.toArray());</span>
+    }
+
+    /**
+     * Uses Objects.toString() to represent this tuple in the for ((), 2, SomeString, etc)
+     */
+    @Override
+    public String toString() {
+<span class="fc" id="L128">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L129">        stringWriter.write(&quot;(&quot;);</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        if(elements.length &gt; 0) {</span>
+<span class="fc" id="L131">            stringWriter.write(Objects.toString(elements[0], &quot;()&quot;));</span>
+        }
+<span class="fc bfc" id="L133" title="All 2 branches covered.">        for(int i = 1; i &lt; elements.length; ++i) {</span>
+<span class="fc" id="L134">            stringWriter.write(&quot;, &quot;);</span>
+<span class="fc" id="L135">            stringWriter.write(Objects.toString(elements[i], &quot;()&quot;));</span>
+        }
+<span class="fc" id="L137">        stringWriter.write(&quot;)&quot;);</span>
+<span class="fc" id="L138">        return stringWriter.toString();</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L143">        final int prime = 31;</span>
+<span class="nc" id="L144">        int result = 1;</span>
+<span class="nc" id="L145">        result = prime * result + Arrays.deepHashCode(elements);</span>
+<span class="nc" id="L146">        return result;</span>
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">        if (this == obj)</span>
+<span class="nc" id="L152">            return true;</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">        if (obj == null)</span>
+<span class="nc" id="L154">            return false;</span>
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">        if (getClass() != obj.getClass())</span>
+<span class="nc" id="L156">            return false;</span>
+<span class="fc" id="L157">        Tuple other = (Tuple) obj;</span>
+<span class="fc" id="L158">        return Arrays.deepEquals(elements, other.elements);</span>
+    }
+
+    /**
+     * &lt;p&gt;Note that the size of a Tuple is not the same as for other collections! For a Tuple,
+     * the size of the collection is the cont of elements.&lt;/p&gt;
+     * {@inheritDoc}
+     */
+    @Override
+    public int size() {
+<span class="fc" id="L168">        int returnSize = 0;</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">        for(Object element : elements) {</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">            returnSize += element instanceof Tuple ? ((Tuple)element).size() : 1;</span>
+        }
+<span class="fc" id="L172">        return returnSize;</span>
+    }
+
+    @Override
+    public boolean contains(Object o) {
+<span class="nc bnc" id="L177" title="All 2 branches missed.">        for(Object element : elements) {</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">            if(element instanceof Tuple) {</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">                if(((Tuple)element).contains(o)) {</span>
+<span class="nc" id="L180">                    return true;</span>
+                }
+            } else {
+<span class="nc bnc" id="L183" title="All 2 branches missed.">                if(Objects.equals(element, o)) {</span>
+<span class="nc" id="L184">                    return true;</span>
+                }
+            }
+        }
+<span class="nc" id="L188">        return false;</span>
+    }
+
+    @Override
+    public boolean containsAll(Collection&lt;?&gt; c) {
+<span class="nc" id="L193">        return Arrays.asList(this.flatten().toArray()).containsAll(Objects.requireNonNull(c));</span>
+    }
+
+    /**
+     * &lt;p&gt;Returns a &quot;Tuple Aware&quot; iterator which ignores empty tuples, and iterates through child Tuples. For
+     * example given the Tuple ((9, ((), 1)), 1), this Iterator will respond with:&lt;/p&gt;
+     * &lt;pre&gt;
+     *iter.next() == 9
+     *iter.next() == 1
+     *iter.next() == 1
+     *iter.next() throws NoSuchElementException
+     * &lt;/pre&gt;
+     */
+    @Override
+    public Iterator&lt;Object&gt; iterator() {
+<span class="nc" id="L208">        return new TupleIterator(this);</span>
+    }
+
+    /**
+     * Returns the raw contents of the Tuple, such that they could be used to create another equal Tuple.
+     * For example, given the Tuple ((), 1), this function will return an Object[]{Tuple0, 1}.
+     */
+    @Override
+    public Object[] toArray() {
+<span class="fc" id="L217">        return elements;</span>
+    }
+
+    @Override
+    public &lt;T&gt; T[] toArray(T[] a) {
+        // TODO Auto-generated method stub
+<span class="nc" id="L223">        throw new UnsupportedOperationException(&quot;Unimplemented method 'toArray'&quot;);</span>
+    }
+
+    /**
+     * Tuples are immutable and do not support 'add'
+     */
+    @Override
+    public boolean add(Object e) {
+<span class="nc" id="L231">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'add'&quot;);</span>
+    }
+
+    /**
+     * Tuples are immutable and do not support 'remove'
+     */
+    @Override
+    public boolean remove(Object o) {
+<span class="nc" id="L239">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'remove'&quot;);</span>
+    }
+
+    /**
+     * Tuples are immutable and do not support 'addAll'
+     */
+    @Override
+    public boolean addAll(Collection&lt;? extends Object&gt; c) {
+<span class="nc" id="L247">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'addAll'&quot;);</span>
+    }
+
+    /**
+     * Tuples are immutable and do not support 'removeAll'
+     */
+    @Override
+    public boolean removeAll(Collection&lt;?&gt; c) {
+<span class="nc" id="L255">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'removeAll'&quot;);</span>
+    }
+
+    /**
+     * Tuples are immutable and do not support 'retainAll'
+     */
+    @Override
+    public boolean retainAll(Collection&lt;?&gt; c) {
+<span class="nc" id="L263">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'retainAll'&quot;);</span>
+    }
+
+    /**
+     * Tuples are immutable and do not support 'clear'
+     */
+    @Override
+    public void clear() {
+<span class="nc" id="L271">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'clear'&quot;);</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
