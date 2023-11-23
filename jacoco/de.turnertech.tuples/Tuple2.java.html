@@ -2,24 +2,40 @@
 
 import java.util.Objects;
 
+/**
+ * A Double
+ */
 public class Tuple2&lt;A,B&gt; extends Tuple {
 
     private final A element0;
 
     private final B element1;
 
+    /**
+     * Constructor
+     * @param element0 element 0
+     * @param element1 element 1
+     */
     public Tuple2(A element0, B element1) {
-<span class="fc" id="L12">        super(new Object[]{Objects.requireNonNull(element0), Objects.requireNonNull(element1)});</span>
-<span class="fc" id="L13">        this.element0 = element0;</span>
-<span class="fc" id="L14">        this.element1 = element1;</span>
-<span class="fc" id="L15">    }</span>
+<span class="fc" id="L20">        super(new Object[]{Objects.requireNonNull(element0), Objects.requireNonNull(element1)});</span>
+<span class="fc" id="L21">        this.element0 = element0;</span>
+<span class="fc" id="L22">        this.element1 = element1;</span>
+<span class="fc" id="L23">    }</span>
 
+    /**
+     * Gets element at the 0 index
+     * @return element at the 0 index
+     */
     public A getElement0() {
-<span class="nc" id="L18">        return element0;</span>
+<span class="nc" id="L30">        return element0;</span>
     }
 
+    /**
+     * Gets element at the 1 index
+     * @return element at the 1 index
+     */
     public B getElement1() {
-<span class="nc" id="L22">        return element1;</span>
+<span class="nc" id="L38">        return element1;</span>
     }
     
 }

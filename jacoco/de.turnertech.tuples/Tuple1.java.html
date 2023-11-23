@@ -2,17 +2,28 @@
 
 import java.util.Objects;
 
+/**
+ * A Single
+ */
 public class Tuple1&lt;A&gt; extends Tuple {
 
     private final A element0;
 
+    /**
+     * Constructor
+     * @param element0 element 0
+     */
     public Tuple1(A element0) {
-<span class="fc" id="L10">        super(new Object[]{Objects.requireNonNull(element0)});</span>
-<span class="fc" id="L11">        this.element0 = element0;</span>
-<span class="fc" id="L12">    }</span>
+<span class="fc" id="L17">        super(new Object[]{Objects.requireNonNull(element0)});</span>
+<span class="fc" id="L18">        this.element0 = element0;</span>
+<span class="fc" id="L19">    }</span>
 
+    /**
+     * Gets element at the 0 index
+     * @return element at the 0 index
+     */
     public A getElement0() {
-<span class="nc" id="L15">        return element0;</span>
+<span class="fc" id="L26">        return element0;</span>
     }
     
 }
