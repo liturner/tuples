@@ -150,6 +150,7 @@
           <version>3.1.0</version>
           <configuration>
             <scmBranch>site</scmBranch>
+            <content>${project.build.directory}/site</content>
           </configuration>
         </plugin>
       </plugins>
@@ -242,7 +243,21 @@
             </goals>
           </execution>
         </executions>
-    </plugin>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-publish-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>scm-publish</id>
+            <phase>site-deploy</phase>
+            <goals>
+              <goal>publish-scm</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
