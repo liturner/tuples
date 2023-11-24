@@ -2,13 +2,16 @@ package test.de.turnertech.tuples;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
@@ -32,6 +35,12 @@ class TupleTests {
     }
 
     @Test
+    void lengthTest() {
+        assertEquals(3, testTuple1.size());
+        assertEquals(2, testTuple1.length());
+    }
+
+    @Test
     void getTest() {
         assertEquals("(5, (((), 1337), Billy))", testTuple1.toString());
         assertEquals(5, testTuple1.get(0));
@@ -48,6 +57,7 @@ class TupleTests {
         assertEquals("(5, ((), 10))", new Tuple(5, new Tuple(new Tuple(), 10)).toString());
         assertEquals("(5, ((), Billy))", new Tuple(5, new Tuple(new Tuple(), "Billy")).toString());
         assertEquals("(5, ((()), Billy))", new Tuple(5, new Tuple(new Tuple1<>(new Tuple0()), "Billy")).toString());
+        assertEquals("(5, (((7, 3)), Billy))", new Tuple(5, new Tuple(new Tuple1<>(new Tuple2<>(7, 3)), "Billy")).toString());
     }
 
     @Test
@@ -107,6 +117,28 @@ class TupleTests {
     @Test
     void fromTest() {
         assertNotNull(Tuple.from());
+        assertNotNull(new Tuple((Object[])null));
     }
     
+    @Test
+    void iteratorTest() {
+        Iterator<Object> iter = testTuple1.iterator();
+        assertTrue(iter.hasNext());
+        assertEquals(5, iter.next());
+        assertTrue(iter.hasNext());
+        assertEquals(1337, iter.next());
+        assertTrue(iter.hasNext());
+        assertEquals("Billy", iter.next());
+        assertFalse(iter.hasNext());
+        assertThrows(NoSuchElementException.class, ()->iter.next());
+    }
+
+    @Test
+    void getElementTest() {
+        assertThrows(IndexOutOfBoundsException.class, ()->testTuple1.getElement(-1));
+        assertEquals(5, testTuple1.getElement(0));
+        assertInstanceOf(Tuple.class, testTuple1.getElement(1));
+        assertThrows(IndexOutOfBoundsException.class, ()->testTuple1.getElement(2));
+    }
+
 }

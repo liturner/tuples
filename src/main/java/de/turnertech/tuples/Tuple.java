@@ -79,7 +79,7 @@ public class Tuple implements Collection<Object> {
     }
 
     /**
-     * Create a double tuple
+     * Create a triple tuple
      * @param <A> the type of element0
      * @param <B> the type of element1
      * @param <C> the type of element2
@@ -98,7 +98,7 @@ public class Tuple implements Collection<Object> {
      * @param elements the elements
      */
     public Tuple(Object... elements) {
-        if(elements == null) {
+        if(elements == null || elements.length == 0) {
             this.elements = new Object[0];
         } else {
             for(Object element : elements) {
@@ -110,7 +110,9 @@ public class Tuple implements Collection<Object> {
 
     /**
      * Can be considered as tuple.flatten().get(...)
-     * 
+     * <pre>
+     *(4, (), 8, (((), 6))).get(1) == 8
+     * </pre>
      * @param index of the next non null element in the tuple.
      * @return the non null element in the tuple.
      */
@@ -123,6 +125,21 @@ public class Tuple implements Collection<Object> {
             iterator.next();
         }
         return iterator.next();
+    }
+
+    /**
+     * Gets the element at the index in this tuple, such that:
+     * <pre>
+     *(4, (), 8, (((), 6))).getElement(1) == ()
+     * </pre>
+     * @param index the next element in the Tuple
+     * @return the element in the Tuple
+     */
+    public Object getElement(int index) {
+        if(index < 0 || index >= length()) {
+            throw new IndexOutOfBoundsException(index);
+        }
+        return elements[index];
     }
 
     /**
@@ -207,7 +224,12 @@ public class Tuple implements Collection<Object> {
 
     /**
      * <p>Note that the size of a Tuple is not the same as for other collections! For a Tuple,
-     * the size of the collection is the cont of elements.</p>
+     * the size of the collection is the count of elements contained in this and all sub tuples.
+     * For example:</p>
+     * <pre>
+     *((), 8, ((5)), ()).size() == 2
+     * </pre>
+     * @see #length()
      * {@inheritDoc}
      */
     @Override
@@ -217,6 +239,18 @@ public class Tuple implements Collection<Object> {
             returnSize += element instanceof Tuple ? ((Tuple)element).size() : 1;
         }
         return returnSize;
+    }
+
+    /**
+     * <p>Gets the length of the Tuple</p>
+     * <pre>
+     *((), 8, ((5)), ()).length() == 4
+     * </pre>
+     * @see #size()
+     * @return the length of the tuple
+     */
+    public int length() {
+        return elements.length;
     }
 
     /**
