@@ -33,13 +33,13 @@ public class Tuple implements Collection&lt;Object&gt; {
 
         @Override
         public boolean hasNext() {
-<span class="nc bnc" id="L36" title="All 2 branches missed.">            return currentIndex &lt; elements.length;</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">            return currentIndex &lt; elements.length;</span>
         }
 
         @Override
         public Object next() {
-<span class="pc bpc" id="L41" title="1 of 2 branches missed.">            if(currentIndex &gt;= elements.length) {</span>
-<span class="nc" id="L42">                throw new NoSuchElementException(&quot;Attempted to iterate beyond the end of a tuple.&quot;);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">            if(currentIndex &gt;= elements.length) {</span>
+<span class="fc" id="L42">                throw new NoSuchElementException(&quot;Attempted to iterate beyond the end of a tuple.&quot;);</span>
             }
 <span class="fc" id="L44">            return elements[currentIndex++];</span>
         }
@@ -79,7 +79,7 @@ public class Tuple implements Collection&lt;Object&gt; {
     }
 
     /**
-     * Create a double tuple
+     * Create a triple tuple
      * @param &lt;A&gt; the type of element0
      * @param &lt;B&gt; the type of element1
      * @param &lt;C&gt; the type of element2
@@ -98,8 +98,8 @@ public class Tuple implements Collection&lt;Object&gt; {
      * @param elements the elements
      */
 <span class="fc" id="L100">    public Tuple(Object... elements) {</span>
-<span class="pc bpc" id="L101" title="1 of 2 branches missed.">        if(elements == null) {</span>
-<span class="nc" id="L102">            this.elements = new Object[0];</span>
+<span class="fc bfc" id="L101" title="All 4 branches covered.">        if(elements == null || elements.length == 0) {</span>
+<span class="fc" id="L102">            this.elements = new Object[0];</span>
         } else {
 <span class="fc bfc" id="L104" title="All 2 branches covered.">            for(Object element : elements) {</span>
 <span class="fc" id="L105">                Objects.requireNonNull(element);</span>
@@ -110,37 +110,54 @@ public class Tuple implements Collection&lt;Object&gt; {
 
     /**
      * Can be considered as tuple.flatten().get(...)
-     * 
+     * &lt;pre&gt;
+     *(4, (), 8, (((), 6))).get(1) == 8
+     * &lt;/pre&gt;
      * @param index of the next non null element in the tuple.
      * @return the non null element in the tuple.
      */
     public Object get(int index) {
-<span class="fc bfc" id="L118" title="All 4 branches covered.">        if(index &lt; 0 || index &gt;= size()) {</span>
-<span class="fc" id="L119">            throw new IndexOutOfBoundsException(index);</span>
+<span class="fc bfc" id="L120" title="All 4 branches covered.">        if(index &lt; 0 || index &gt;= size()) {</span>
+<span class="fc" id="L121">            throw new IndexOutOfBoundsException(index);</span>
         }
-<span class="fc" id="L121">        final TupleIterator iterator = new TupleIterator(this);</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">        for(int i = 0; i &lt; index; ++i) {</span>
-<span class="fc" id="L123">            iterator.next();</span>
+<span class="fc" id="L123">        final TupleIterator iterator = new TupleIterator(this);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        for(int i = 0; i &lt; index; ++i) {</span>
+<span class="fc" id="L125">            iterator.next();</span>
         }
-<span class="fc" id="L125">        return iterator.next();</span>
+<span class="fc" id="L127">        return iterator.next();</span>
+    }
+
+    /**
+     * Gets the element at the index in this tuple, such that:
+     * &lt;pre&gt;
+     *(4, (), 8, (((), 6))).getElement(1) == ()
+     * &lt;/pre&gt;
+     * @param index the next element in the Tuple
+     * @return the element in the Tuple
+     */
+    public Object getElement(int index) {
+<span class="fc bfc" id="L139" title="All 4 branches covered.">        if(index &lt; 0 || index &gt;= length()) {</span>
+<span class="fc" id="L140">            throw new IndexOutOfBoundsException(index);</span>
+        }
+<span class="fc" id="L142">        return elements[index];</span>
     }
 
     /**
      * Equivelant to tuple.flatten().size() == 0
      */
     public boolean isEmpty() {
-<span class="fc bfc" id="L132" title="All 2 branches covered.">        return flatten().elements.length == 0;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">        return flatten().elements.length == 0;</span>
     }
 
     private void flatten(List&lt;Object&gt; out) {
-<span class="fc bfc" id="L136" title="All 2 branches covered.">        for(Object element : elements) {</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">            if(element instanceof Tuple) {</span>
-<span class="fc" id="L138">                ((Tuple)element).flatten(out);</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        for(Object element : elements) {</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">            if(element instanceof Tuple) {</span>
+<span class="fc" id="L155">                ((Tuple)element).flatten(out);</span>
             } else {
-<span class="fc" id="L140">                out.add(element);</span>
+<span class="fc" id="L157">                out.add(element);</span>
             }
         }
-<span class="fc" id="L143">    }</span>
+<span class="fc" id="L160">    }</span>
 
     /**
      * &lt;p&gt;Removes all Tuples contained in this Tuple, and return a single &quot;flat&quot; Tuple. For example:&lt;/p&gt;
@@ -152,9 +169,9 @@ public class Tuple implements Collection&lt;Object&gt; {
      * @return A tuple containing no sub tuples
      */
     public Tuple flatten() {
-<span class="fc" id="L155">        LinkedList&lt;Object&gt; returnCollection = new LinkedList&lt;&gt;();</span>
-<span class="fc" id="L156">        this.flatten(returnCollection);</span>
-<span class="fc" id="L157">        return new Tuple(returnCollection.toArray());</span>
+<span class="fc" id="L172">        LinkedList&lt;Object&gt; returnCollection = new LinkedList&lt;&gt;();</span>
+<span class="fc" id="L173">        this.flatten(returnCollection);</span>
+<span class="fc" id="L174">        return new Tuple(returnCollection.toArray());</span>
     }
 
     /**
@@ -162,17 +179,17 @@ public class Tuple implements Collection&lt;Object&gt; {
      */
     @Override
     public String toString() {
-<span class="fc" id="L165">        final StringWriter stringWriter = new StringWriter();</span>
-<span class="fc" id="L166">        stringWriter.write(&quot;(&quot;);</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">        if(elements.length &gt; 0) {</span>
-<span class="fc" id="L168">            stringWriter.write(Objects.toString(elements[0], &quot;()&quot;));</span>
+<span class="fc" id="L182">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L183">        stringWriter.write(&quot;(&quot;);</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">        if(elements.length &gt; 0) {</span>
+<span class="fc" id="L185">            stringWriter.write(Objects.toString(elements[0], &quot;()&quot;));</span>
         }
-<span class="fc bfc" id="L170" title="All 2 branches covered.">        for(int i = 1; i &lt; elements.length; ++i) {</span>
-<span class="fc" id="L171">            stringWriter.write(&quot;, &quot;);</span>
-<span class="fc" id="L172">            stringWriter.write(Objects.toString(elements[i], &quot;()&quot;));</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        for(int i = 1; i &lt; elements.length; ++i) {</span>
+<span class="fc" id="L188">            stringWriter.write(&quot;, &quot;);</span>
+<span class="fc" id="L189">            stringWriter.write(Objects.toString(elements[i], &quot;()&quot;));</span>
         }
-<span class="fc" id="L174">        stringWriter.write(&quot;)&quot;);</span>
-<span class="fc" id="L175">        return stringWriter.toString();</span>
+<span class="fc" id="L191">        stringWriter.write(&quot;)&quot;);</span>
+<span class="fc" id="L192">        return stringWriter.toString();</span>
     }
 
     /**
@@ -182,10 +199,10 @@ public class Tuple implements Collection&lt;Object&gt; {
      */
     @Override
     public int hashCode() {
-<span class="nc" id="L185">        final int prime = 31;</span>
-<span class="nc" id="L186">        int result = 1;</span>
-<span class="nc" id="L187">        result = prime * result + Arrays.deepHashCode(elements);</span>
-<span class="nc" id="L188">        return result;</span>
+<span class="nc" id="L202">        final int prime = 31;</span>
+<span class="nc" id="L203">        int result = 1;</span>
+<span class="nc" id="L204">        result = prime * result + Arrays.deepHashCode(elements);</span>
+<span class="nc" id="L205">        return result;</span>
     }
 
     /**
@@ -195,28 +212,45 @@ public class Tuple implements Collection&lt;Object&gt; {
      */
     @Override
     public boolean equals(Object obj) {
-<span class="pc bpc" id="L198" title="1 of 2 branches missed.">        if (this == obj)</span>
-<span class="nc" id="L199">            return true;</span>
-<span class="pc bpc" id="L200" title="1 of 2 branches missed.">        if (obj == null)</span>
-<span class="nc" id="L201">            return false;</span>
-<span class="pc bpc" id="L202" title="1 of 2 branches missed.">        if (getClass() != obj.getClass())</span>
-<span class="nc" id="L203">            return false;</span>
-<span class="fc" id="L204">        Tuple other = (Tuple) obj;</span>
-<span class="fc" id="L205">        return Arrays.deepEquals(elements, other.elements);</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">        if (this == obj)</span>
+<span class="nc" id="L216">            return true;</span>
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">        if (obj == null)</span>
+<span class="nc" id="L218">            return false;</span>
+<span class="pc bpc" id="L219" title="1 of 2 branches missed.">        if (getClass() != obj.getClass())</span>
+<span class="nc" id="L220">            return false;</span>
+<span class="fc" id="L221">        Tuple other = (Tuple) obj;</span>
+<span class="fc" id="L222">        return Arrays.deepEquals(elements, other.elements);</span>
     }
 
     /**
      * &lt;p&gt;Note that the size of a Tuple is not the same as for other collections! For a Tuple,
-     * the size of the collection is the cont of elements.&lt;/p&gt;
+     * the size of the collection is the count of elements contained in this and all sub tuples.
+     * For example:&lt;/p&gt;
+     * &lt;pre&gt;
+     *((), 8, ((5)), ()).size() == 2
+     * &lt;/pre&gt;
+     * @see #length()
      * {@inheritDoc}
      */
     @Override
     public int size() {
-<span class="fc" id="L215">        int returnSize = 0;</span>
-<span class="fc bfc" id="L216" title="All 2 branches covered.">        for(Object element : elements) {</span>
-<span class="fc bfc" id="L217" title="All 2 branches covered.">            returnSize += element instanceof Tuple ? ((Tuple)element).size() : 1;</span>
+<span class="fc" id="L237">        int returnSize = 0;</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">        for(Object element : elements) {</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">            returnSize += element instanceof Tuple ? ((Tuple)element).size() : 1;</span>
         }
-<span class="fc" id="L219">        return returnSize;</span>
+<span class="fc" id="L241">        return returnSize;</span>
+    }
+
+    /**
+     * &lt;p&gt;Gets the length of the Tuple&lt;/p&gt;
+     * &lt;pre&gt;
+     *((), 8, ((5)), ()).length() == 4
+     * &lt;/pre&gt;
+     * @see #size()
+     * @return the length of the tuple
+     */
+    public int length() {
+<span class="fc" id="L253">        return elements.length;</span>
     }
 
     /**
@@ -224,18 +258,18 @@ public class Tuple implements Collection&lt;Object&gt; {
      */
     @Override
     public boolean contains(Object o) {
-<span class="fc bfc" id="L227" title="All 2 branches covered.">        for(Object element : elements) {</span>
-<span class="fc bfc" id="L228" title="All 2 branches covered.">            if(element instanceof Tuple) {</span>
-<span class="fc bfc" id="L229" title="All 2 branches covered.">                if(((Tuple)element).contains(o)) {</span>
-<span class="fc" id="L230">                    return true;</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">        for(Object element : elements) {</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">            if(element instanceof Tuple) {</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">                if(((Tuple)element).contains(o)) {</span>
+<span class="fc" id="L264">                    return true;</span>
                 }
             } else {
-<span class="fc bfc" id="L233" title="All 2 branches covered.">                if(Objects.equals(element, o)) {</span>
-<span class="fc" id="L234">                    return true;</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">                if(Objects.equals(element, o)) {</span>
+<span class="fc" id="L268">                    return true;</span>
                 }
             }
         }
-<span class="fc" id="L238">        return false;</span>
+<span class="fc" id="L272">        return false;</span>
     }
 
     /**
@@ -243,7 +277,7 @@ public class Tuple implements Collection&lt;Object&gt; {
      */
     @Override
     public boolean containsAll(Collection&lt;?&gt; c) {
-<span class="fc" id="L246">        return Arrays.asList(this.flatten().toArray()).containsAll(Objects.requireNonNull(c));</span>
+<span class="fc" id="L280">        return Arrays.asList(this.flatten().toArray()).containsAll(Objects.requireNonNull(c));</span>
     }
 
     /**
@@ -258,7 +292,7 @@ public class Tuple implements Collection&lt;Object&gt; {
      */
     @Override
     public Iterator&lt;Object&gt; iterator() {
-<span class="nc" id="L261">        return new TupleIterator(this);</span>
+<span class="fc" id="L295">        return new TupleIterator(this);</span>
     }
 
     /**
@@ -267,7 +301,7 @@ public class Tuple implements Collection&lt;Object&gt; {
      */
     @Override
     public Object[] toArray() {
-<span class="fc" id="L270">        return elements;</span>
+<span class="fc" id="L304">        return elements;</span>
     }
 
     /**
@@ -275,7 +309,7 @@ public class Tuple implements Collection&lt;Object&gt; {
      */
     @Override
     public &lt;T&gt; T[] toArray(T[] a) {
-<span class="nc" id="L278">        throw new UnsupportedOperationException(&quot;Tuples are multi-typed and do not support 'toArray'&quot;);</span>
+<span class="nc" id="L312">        throw new UnsupportedOperationException(&quot;Tuples are multi-typed and do not support 'toArray'&quot;);</span>
     }
 
     /**
@@ -283,7 +317,7 @@ public class Tuple implements Collection&lt;Object&gt; {
      */
     @Override
     public boolean add(Object e) {
-<span class="fc" id="L286">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'add'&quot;);</span>
+<span class="fc" id="L320">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'add'&quot;);</span>
     }
 
     /**
@@ -291,7 +325,7 @@ public class Tuple implements Collection&lt;Object&gt; {
      */
     @Override
     public boolean remove(Object o) {
-<span class="fc" id="L294">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'remove'&quot;);</span>
+<span class="fc" id="L328">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'remove'&quot;);</span>
     }
 
     /**
@@ -299,7 +333,7 @@ public class Tuple implements Collection&lt;Object&gt; {
      */
     @Override
     public boolean addAll(Collection&lt;? extends Object&gt; c) {
-<span class="fc" id="L302">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'addAll'&quot;);</span>
+<span class="fc" id="L336">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'addAll'&quot;);</span>
     }
 
     /**
@@ -307,7 +341,7 @@ public class Tuple implements Collection&lt;Object&gt; {
      */
     @Override
     public boolean removeAll(Collection&lt;?&gt; c) {
-<span class="fc" id="L310">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'removeAll'&quot;);</span>
+<span class="fc" id="L344">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'removeAll'&quot;);</span>
     }
 
     /**
@@ -315,7 +349,7 @@ public class Tuple implements Collection&lt;Object&gt; {
      */
     @Override
     public boolean retainAll(Collection&lt;?&gt; c) {
-<span class="fc" id="L318">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'retainAll'&quot;);</span>
+<span class="fc" id="L352">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'retainAll'&quot;);</span>
     }
 
     /**
@@ -323,7 +357,7 @@ public class Tuple implements Collection&lt;Object&gt; {
      */
     @Override
     public void clear() {
-<span class="fc" id="L326">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'clear'&quot;);</span>
+<span class="fc" id="L360">        throw new UnsupportedOperationException(&quot;Tuples are immutable and do not support 'clear'&quot;);</span>
     }
     
 }
